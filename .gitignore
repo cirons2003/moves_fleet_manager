@@ -1,2 +1,4 @@
 *.env
-node_modules/
+
+moves-api/node_modules
+moves-api/private

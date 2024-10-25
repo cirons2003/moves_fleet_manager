@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { redisClient } from '../..';
-import { extractUserId } from './helpers';
+import { redisClient } from '../../index';
 
 export const refreshToken = async (userId: string) => {
     try {
@@ -25,13 +24,6 @@ export const refreshToken = async (userId: string) => {
             );
 
             const { refresh_token, access_token, id_token } = response.data;
-            const userId = extractUserId(id_token);
-
-            redisClient.set(
-                `tokens_${userId}`,
-                JSON.stringify({ access_token, refresh_token }),
-            );
-            console.log(`refreshed tokens for ${userId}`);
         }
     } catch (err) {
         console.error(err);
