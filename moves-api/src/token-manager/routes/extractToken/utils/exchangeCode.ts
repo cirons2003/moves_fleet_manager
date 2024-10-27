@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { TeslaError } from '../../../../middleware/errorHandler';
 
+// throws Http Errors
 const exchangeCode = async (code: string) => {
     const params = new URLSearchParams({
         grant_type: 'authorization_code',
@@ -24,7 +26,7 @@ const exchangeCode = async (code: string) => {
         const { access_token, refresh_token, id_token } = response.data;
         return { access_token, refresh_token, id_token };
     } catch (err) {
-        console.error(err);
+        throw new TeslaError(`Failed to exchange code: ${err}`);
     }
 };
 

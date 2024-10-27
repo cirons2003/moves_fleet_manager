@@ -1,21 +1,47 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import exchangeCode from './utils/exchangeCode';
-import initiateUserSession from '../../processes/initiateUserSession';
-import { refreshToken } from '../../processes/refreshToken';
-import { decode } from 'jsonwebtoken';
+import {
+    HttpError,
+    Httpify,
+    UserNotFoundError,
+    ValidationError,
+} from '../../../middleware/errorHandler';
+import initiateUserSession from './utils/initiateUserSession';
+import { parseState } from './utils/parseState';
+import { checkUser } from '../../../database/utils/checkUser';
 
 const extractToken = Router();
 
-extractToken.get('/extractToken', async (req: Request, res: Response) => {
-    const { code } = req.query;
-    const tokens = await exchangeCode(code as string);
-    if (tokens !== undefined) {
-        //initiateUserSession(tokens);
-    }
-    console.log(`authToken: ${tokens?.access_token}`);
-    console.log(`refresh Token: ${tokens?.refresh_token}`);
-    console.log(decode(tokens?.access_token));
-    res.redirect('/');
-});
+extractToken.get(
+    '/extractToken',
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { code, state } = req.query;
+
+        const { user_id } = parseState(state as string);
+
+        if (!user_id) {
+            return next(new ValidationError('user_id is required'));
+        }
+
+        if (!code) {
+            return next(new ValidationError('code is required'));
+        }
+
+        try {
+            const userExists = await checkUser(+user_id);
+            if (!userExists) {
+                throw new UserNotFoundError(+user_id);
+            }
+            const tokens = await exchangeCode(code as string);
+            await initiateUserSession(+user_id, tokens);
+            res.redirect('/');
+            res.status(200).send({
+                message: `Successfully stored tesla tokens for user ${user_id}`,
+            });
+        } catch (err) {
+            next(Httpify(err));
+        }
+    },
+);
 
 export default extractToken;
