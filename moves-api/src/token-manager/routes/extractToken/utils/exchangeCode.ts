@@ -26,7 +26,7 @@ const exchangeCode = async (code: string) => {
         const { access_token, refresh_token, id_token } = response.data;
         return { access_token, refresh_token, id_token };
     } catch (err) {
-        throw new TeslaError(`Failed to exchange code: ${err}`);
+        throw new TeslaError(err, `Failed to exchange code: ${err}`);
     }
 };
 

@@ -20,24 +20,21 @@ extractToken.get(
         const { user_id } = parseState(state as string);
 
         if (!user_id) {
-            return next(new ValidationError('user_id is required'));
+            return next(new ValidationError(undefined, 'user_id is required'));
         }
 
         if (!code) {
-            return next(new ValidationError('code is required'));
+            return next(new ValidationError(undefined, 'code is required'));
         }
 
         try {
             const userExists = await checkUser(+user_id);
             if (!userExists) {
-                throw new UserNotFoundError(+user_id);
+                throw new UserNotFoundError(undefined, +user_id);
             }
             const tokens = await exchangeCode(code as string);
             await initiateUserSession(+user_id, tokens);
             res.redirect('/');
-            res.status(200).send({
-                message: `Successfully stored tesla tokens for user ${user_id}`,
-            });
         } catch (err) {
             next(Httpify(err));
         }

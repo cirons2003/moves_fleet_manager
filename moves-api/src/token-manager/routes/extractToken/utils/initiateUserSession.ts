@@ -1,3 +1,4 @@
+import { decode } from 'jsonwebtoken';
 import { knexObj } from '../../../../database/knexObj';
 import { DatabaseError } from '../../../../middleware/errorHandler';
 
@@ -15,9 +16,11 @@ const initiateUserSession = async (uid: number, tokens: Tokens) => {
         await knexObj('users').where('id', uid).update({
             tesla_access_token: access_token,
             tesla_refresh_token: refresh_token,
+            valid_refresh_token: true,
         });
+        console.log(decode(access_token));
     } catch (err) {
-        throw new DatabaseError(`Failed to assign user tokens: ${err}`);
+        throw new DatabaseError(err, `Failed to assign user tokens: ${err}`);
     }
 
     /* schedule refresh */

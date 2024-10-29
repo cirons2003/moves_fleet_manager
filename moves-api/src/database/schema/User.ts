@@ -5,6 +5,7 @@ type PrimaryKey = {
 type NonNullable = {
     email: string;
     password: string;
+    valid_refresh_token: boolean;
 };
 
 type Nullable = {

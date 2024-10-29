@@ -1,6 +1,10 @@
 import axios from 'axios';
-import { authorizeUserRequest } from './utils/authorizeUserRequest';
+import { authorizeConfig } from './utils/authorizeConfig';
 import { TeslaError } from '../../middleware/errorHandler';
+import { signConfig } from './utils/signConfig';
+import { sign } from 'crypto';
+import { getVehicleOwnerId } from '../../database/utils/getVehicleOwnerId';
+import { handleTeslaErrors } from './utils/handleTeslaErrors';
 
 export type RequestConfig = {
     method: 'GET' | 'POST';
@@ -10,36 +14,48 @@ export type RequestConfig = {
     [key: string]: any;
 };
 
-const teslaUrl = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
+const expandConfig = (config: RequestConfig, requestUrl: string) => {
+    const expandedConfig = { ...config };
+    expandedConfig.baseURL = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
+    expandedConfig.url = requestUrl;
+    return expandedConfig;
+};
 
 // throws HTTP Errors
 export const HTTPClient = {
     tesla: {
-        vehicleRequest: (
-            requestUrl: string,
-            vehicleId: number,
-            config: RequestConfig,
-        ) => {},
         userRequest: async <T>(
             requestUrl: string,
             userId: number,
             config: RequestConfig,
         ) => {
-            authorizeUserRequest(config, userId);
-            config.baseURL = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
-            config.url = requestUrl;
+            const expandedConfig = expandConfig(config, requestUrl);
+            const authorizedConfig = await authorizeConfig(
+                expandedConfig,
+                userId,
+            );
             try {
-                return await axios.request<T>(config);
+                return await axios.request<T>(authorizedConfig);
             } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    throw new TeslaError(
-                        `Request to ${requestUrl} failed with code ${err.response?.status ?? 'Unknown'}: ${err.message}`,
-                    );
-                } else {
-                    throw new TeslaError(
-                        `Request to ${requestUrl} failed: ${err}`,
-                    );
-                }
+                return handleTeslaErrors(err, userId);
+            }
+        },
+        vehicleRequest: async <T>(
+            requestUrl: string,
+            vehicleId: number,
+            config: RequestConfig,
+        ) => {
+            const expandedConfig = expandConfig(config, requestUrl);
+            const userId = await getVehicleOwnerId(vehicleId);
+            const authorizedConfig = await authorizeConfig(
+                expandedConfig,
+                userId,
+            );
+            const signedConfig = signConfig(authorizedConfig);
+            try {
+                return await axios.request<T>(signedConfig);
+            } catch (err) {
+                return handleTeslaErrors(err, userId, vehicleId);
             }
         },
     },
