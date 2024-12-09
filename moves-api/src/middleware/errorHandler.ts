@@ -23,6 +23,18 @@ export class UserNotFoundError extends HttpError {
     }
 }
 
+export class VehicleNotFoundError extends HttpError {
+    constructor(raw?: any, vehicle_id?: number) {
+        super(
+            raw,
+            vehicle_id !== undefined
+                ? `Vehicle with id ${vehicle_id} not found`
+                : 'Vehicle not found',
+            404,
+        );
+    }
+}
+
 export class ValidationError extends HttpError {
     constructor(raw: any, message: string = 'Validation failed') {
         super(raw, message, 400);

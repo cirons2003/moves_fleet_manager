@@ -34,6 +34,7 @@ export const handleTeslaErrors = (
 const handleUnpairedKeyErrors = (err: AxiosError, vehicleId?: number) => {
     if (!vehicleId) {
         throw new AuthorizationError(
+            err,
             'Unpaired Key Error detected, but no vehicleId detected',
         );
     }

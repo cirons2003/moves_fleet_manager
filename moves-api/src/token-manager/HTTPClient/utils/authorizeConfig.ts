@@ -1,4 +1,3 @@
-import { decode } from 'jsonwebtoken';
 import { getTeslaAccessToken } from '../../../database/utils/getTeslaAccessToken';
 import {
     AuthorizationError,

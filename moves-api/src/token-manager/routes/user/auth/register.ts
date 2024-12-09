@@ -52,10 +52,14 @@ register.post(
                 valid_refresh_token: false,
             };
 
-            await knexObj('users').insert(newUser);
+            const user_ids = await knexObj('users')
+                .insert(newUser)
+                .returning('id');
+            const uid = user_ids[0].id;
             return res.status(200).json({
-                success: true,
                 message: `successfully registered user with email:${email}`,
+                user_id: uid,
+                success: true,
             });
         } catch (err) {
             return next(

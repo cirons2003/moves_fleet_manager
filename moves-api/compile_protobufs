@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Define the directory containing .proto files
+
+# Check if the protoc and plugin exist
+if ! command -v protoc &> /dev/null; then
+  echo "Error: protoc is not installed."
+  exit 1
+fi
+
+if [ ! -f "node_modules/.bin/protoc-gen-ts_proto" ]; then
+  echo "Error: protoc-gen-ts_proto plugin is missing. Install it with 'npm install ts-proto'."
+  exit 1
+fi
+
+PROTO_DIR="./src/token-manager/HTTPClient/signer/protobuf"
+
+# Find all .proto files in the specified directory
+PROTO_FILES=$(find "$PROTO_DIR" -type f -name "*.proto")
+
+if [ -z "$PROTO_FILES" ]; then
+  echo "No .proto files found in $PROTO_DIR."
+  exit 0
+fi
+
+# Process each .proto file
+for PROTO_FILE in $PROTO_FILES; do
+  # Extract the base name of the proto file (without extension)
+  PROTO_NAME=$(basename "$PROTO_FILE" .proto)
+  
+  # Define the output directory for this proto file
+  OUT_DIR="${PROTO_DIR}/outputs"
+  
+  # Ensure output directory exists
+  mkdir -p "$OUT_DIR"
+
+  # Generate TypeScript code
+  echo "Generating TypeScript code for ${PROTO_FILE}..."
+  protoc \
+    --plugin=protoc-gen-ts_proto=node_modules/.bin/protoc-gen-ts_proto \
+    --proto_path="$PROTO_DIR" \
+    --ts_proto_out="$OUT_DIR" \
+    --ts_proto_opt=outputEncodeMethods=true,outputJsonMethods=true \
+    "$PROTO_FILE"
+  
+  # Check if the command succeeded
+  if [ $? -eq 0 ]; then
+    echo "Successfully generated TypeScript for ${PROTO_FILE}."
+  else
+    echo "Failed to generate TypeScript for ${PROTO_FILE}."
+    exit 1
+  fi
+done
+
+echo "All .proto files have been processed successfully."

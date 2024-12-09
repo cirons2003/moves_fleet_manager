@@ -18,7 +18,7 @@ const initiateUserSession = async (uid: number, tokens: Tokens) => {
             tesla_refresh_token: refresh_token,
             valid_refresh_token: true,
         });
-        console.log(decode(access_token));
+        console.log(`User ${uid} successfully granted Tesla Access`);
     } catch (err) {
         throw new DatabaseError(err, `Failed to assign user tokens: ${err}`);
     }

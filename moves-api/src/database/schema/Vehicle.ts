@@ -1,14 +1,6 @@
-type PrimaryKey = {
+export type Vehicle = {
     id?: number;
-};
-
-type NonNullable = {
+    vin: string;
     user_id: number; // Foreign key
     key_paired: boolean;
 };
-
-type Nullable = {
-    vin: string;
-};
-
-export type User = PrimaryKey & NonNullable & Nullable;

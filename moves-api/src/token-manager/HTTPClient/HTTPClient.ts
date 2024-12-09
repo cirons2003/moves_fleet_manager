@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { authorizeConfig } from './utils/authorizeConfig';
-import { TeslaError } from '../../middleware/errorHandler';
 import { signConfig } from './utils/signConfig';
-import { sign } from 'crypto';
 import { getVehicleOwnerId } from '../../database/utils/getVehicleOwnerId';
 import { handleTeslaErrors } from './utils/handleTeslaErrors';
 
@@ -42,20 +40,20 @@ export const HTTPClient = {
         },
         vehicleRequest: async <T>(
             requestUrl: string,
-            vehicleId: number,
             config: RequestConfig,
         ) => {
             const expandedConfig = expandConfig(config, requestUrl);
-            const userId = await getVehicleOwnerId(vehicleId);
+            const userId = 7; //await getVehicleOwnerId(vehicleId);
             const authorizedConfig = await authorizeConfig(
                 expandedConfig,
                 userId,
             );
             const signedConfig = signConfig(authorizedConfig);
+            console.log(signedConfig);
             try {
                 return await axios.request<T>(signedConfig);
             } catch (err) {
-                return handleTeslaErrors(err, userId, vehicleId);
+                console.error(err); //return handleTeslaErrors(err, userId, 1);
             }
         },
     },
