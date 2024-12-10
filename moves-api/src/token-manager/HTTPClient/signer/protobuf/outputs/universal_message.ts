@@ -332,10 +332,10 @@ export interface RoutableMessage {
   sessionInfoRequest?: SessionInfoRequest | undefined;
   sessionInfo?: Uint8Array | undefined;
   signatureData?: SignatureData | undefined;
-  signedMessageStatus: MessageStatus | undefined;
-  requestUuid: Uint8Array;
-  uuid: Uint8Array;
-  flags: number;
+  signedMessageStatus?: MessageStatus | undefined;
+  requestUuid?: Uint8Array | undefined;
+  uuid?: Uint8Array | undefined;
+  flags?: number | undefined;
 }
 
 function createBaseDestination(): Destination {
@@ -575,9 +575,9 @@ function createBaseRoutableMessage(): RoutableMessage {
     sessionInfo: undefined,
     signatureData: undefined,
     signedMessageStatus: undefined,
-    requestUuid: new Uint8Array(0),
-    uuid: new Uint8Array(0),
-    flags: 0,
+    requestUuid: undefined,
+    uuid: undefined,
+    flags: undefined,
   };
 }
 
@@ -604,13 +604,13 @@ export const RoutableMessage: MessageFns<RoutableMessage> = {
     if (message.signedMessageStatus !== undefined) {
       MessageStatus.encode(message.signedMessageStatus, writer.uint32(98).fork()).join();
     }
-    if (message.requestUuid.length !== 0) {
+    if (message.requestUuid !== undefined) {
       writer.uint32(402).bytes(message.requestUuid);
     }
-    if (message.uuid.length !== 0) {
+    if (message.uuid !== undefined) {
       writer.uint32(410).bytes(message.uuid);
     }
-    if (message.flags !== 0) {
+    if (message.flags !== undefined) {
       writer.uint32(416).uint32(message.flags);
     }
     return writer;
@@ -727,9 +727,9 @@ export const RoutableMessage: MessageFns<RoutableMessage> = {
       signedMessageStatus: isSet(object.signedMessageStatus)
         ? MessageStatus.fromJSON(object.signedMessageStatus)
         : undefined,
-      requestUuid: isSet(object.requestUuid) ? bytesFromBase64(object.requestUuid) : new Uint8Array(0),
-      uuid: isSet(object.uuid) ? bytesFromBase64(object.uuid) : new Uint8Array(0),
-      flags: isSet(object.flags) ? globalThis.Number(object.flags) : 0,
+      requestUuid: isSet(object.requestUuid) ? bytesFromBase64(object.requestUuid) : undefined,
+      uuid: isSet(object.uuid) ? bytesFromBase64(object.uuid) : undefined,
+      flags: isSet(object.flags) ? globalThis.Number(object.flags) : undefined,
     };
   },
 
@@ -756,13 +756,13 @@ export const RoutableMessage: MessageFns<RoutableMessage> = {
     if (message.signedMessageStatus !== undefined) {
       obj.signedMessageStatus = MessageStatus.toJSON(message.signedMessageStatus);
     }
-    if (message.requestUuid.length !== 0) {
+    if (message.requestUuid !== undefined) {
       obj.requestUuid = base64FromBytes(message.requestUuid);
     }
-    if (message.uuid.length !== 0) {
+    if (message.uuid !== undefined) {
       obj.uuid = base64FromBytes(message.uuid);
     }
-    if (message.flags !== 0) {
+    if (message.flags !== undefined) {
       obj.flags = Math.round(message.flags);
     }
     return obj;
@@ -790,9 +790,9 @@ export const RoutableMessage: MessageFns<RoutableMessage> = {
     message.signedMessageStatus = (object.signedMessageStatus !== undefined && object.signedMessageStatus !== null)
       ? MessageStatus.fromPartial(object.signedMessageStatus)
       : undefined;
-    message.requestUuid = object.requestUuid ?? new Uint8Array(0);
-    message.uuid = object.uuid ?? new Uint8Array(0);
-    message.flags = object.flags ?? 0;
+    message.requestUuid = object.requestUuid ?? undefined;
+    message.uuid = object.uuid ?? undefined;
+    message.flags = object.flags ?? undefined;
     return message;
   },
 };

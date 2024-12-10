@@ -92,8 +92,12 @@ message RoutableMessage {
         Signatures.SignatureData signature_data = 13;
     }
 
-    MessageStatus signedMessageStatus = 12;
-    bytes request_uuid           = 50;
-    bytes uuid                   = 51;
-    uint32 flags = 52;
+    optional MessageStatus signedMessageStatus = 12;
+    
+    oneof sub_uuid {
+        bytes request_uuid           = 50;
+        bytes uuid                   = 51;
+    }
+
+    optional uint32 flags = 52;
 }

@@ -40,7 +40,8 @@ for PROTO_FILE in $PROTO_FILES; do
     --plugin=protoc-gen-ts_proto=node_modules/.bin/protoc-gen-ts_proto \
     --proto_path="$PROTO_DIR" \
     --ts_proto_out="$OUT_DIR" \
-    --ts_proto_opt=outputEncodeMethods=true,outputJsonMethods=true \
+    --ts_proto_opt=outputEncodeMethods=true,outputJsonMethods=true,forceOptional=true \
+    --experimental_allow_proto3_optional=true \
     "$PROTO_FILE"
   
   # Check if the command succeeded
