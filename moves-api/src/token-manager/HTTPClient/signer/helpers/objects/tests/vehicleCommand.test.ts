@@ -27,7 +27,7 @@ describe('VehicleCommand', () => {
             fromDestination: {
                 routingAddress: vehicleCommand.getRoutingAddress(),
             },
-            protobufMessageAsBytes: vehicleCommand.getCipherText(),
+            protobufMessageAsBytes: Buffer.from('38038e8c0f2e', 'hex'),
             signatureData: {
                 signerIdentity: {
                     publicKey: clientPublicKey.toBuffer(),
