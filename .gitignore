@@ -1,5 +1,0 @@
-*.env
-
-moves-api/node_modules
-moves-api/private
-
