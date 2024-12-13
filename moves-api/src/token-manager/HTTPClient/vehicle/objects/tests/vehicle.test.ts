@@ -1,4 +1,4 @@
-import { Action } from '../../../protobuf/outputs/car_server';
+import { Action } from '../../protobuf/outputs/car_server';
 import Vehicle from '../Vehicle';
 
 describe('Vehicle', () => {

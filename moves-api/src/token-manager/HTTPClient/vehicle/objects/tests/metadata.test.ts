@@ -1,4 +1,4 @@
-import { SignatureType, Tag } from '../../../protobuf/outputs/signatures';
+import { SignatureType, Tag } from '../../protobuf/outputs/signatures';
 import Metadata from '../Metadata';
 
 describe('Metadata', () => {

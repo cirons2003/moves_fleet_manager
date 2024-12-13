@@ -12,3 +12,9 @@ export class BadVehicleResponseError extends ProtocolError {
         super(raw, message);
     }
 }
+
+export class FailedHandshakeError extends ProtocolError {
+    constructor(raw: any, message: string = 'Failed Handshake') {
+        super(raw, message);
+    }
+}

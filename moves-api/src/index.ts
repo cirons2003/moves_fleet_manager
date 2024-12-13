@@ -10,7 +10,7 @@ import { errorHandler } from './middleware/errorHandler';
 dotenv.config();
 
 // configure redis
-const redis = require('redis');
+/*const redis = require('redis');
 export const redisClient = redis.createClient({
     url: process.env.REDIS_URL,
 });
@@ -21,7 +21,7 @@ const initializeRedisConnection = async () => {
     await redisClient.connect();
 };
 initializeRedisConnection();
-
+*/
 // initialize app and set up middleware
 const app = express();
 app.use(cors());

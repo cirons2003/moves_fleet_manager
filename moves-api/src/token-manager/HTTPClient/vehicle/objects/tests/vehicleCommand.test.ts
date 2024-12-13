@@ -1,11 +1,13 @@
-import { clientPublicKey } from '../../../keys';
-import { SignatureType } from '../../../protobuf/outputs/signatures';
+import { SignatureType } from '../../protobuf/outputs/signatures';
 import {
     Domain,
     RoutableMessage,
-} from '../../../protobuf/outputs/universal_message';
+} from '../../protobuf/outputs/universal_message';
 import VehicleCommand from '../VehicleCommand';
-import { mockedVehicle } from './testValues';
+import { mockedVehicle, testPemPublicKeyClient } from './testValues';
+
+import { clientPublicKey } from '../../keys';
+import PublicKey from '../PublicKey';
 
 describe('VehicleCommand', () => {
     it('Should Properly generate bytes for AESGCM encrypted command', () => {
@@ -27,16 +29,19 @@ describe('VehicleCommand', () => {
             fromDestination: {
                 routingAddress: vehicleCommand.getRoutingAddress(),
             },
-            protobufMessageAsBytes: Buffer.from('38038e8c0f2e', 'hex'),
+            protobufMessageAsBytes: vehicleCommand.getCipherText(),
             signatureData: {
                 signerIdentity: {
-                    publicKey: clientPublicKey.toBuffer(),
+                    publicKey: vehicleCommand.getPublicKey(),
                 },
                 AESGCMPersonalizedData: {
-                    epoch: vehicleCommand.getEpoch(),
+                    epoch: Buffer.from(
+                        '4c463f9cc0d3d26906e982ed224adde6',
+                        'hex',
+                    ),
                     nonce: vehicleCommand.getNonce() as Buffer,
                     counter: vehicleCommand.getCounter(),
-                    expiresAt: vehicleCommand.getExpiration(),
+                    expiresAt: 2655,
                     tag: vehicleCommand.getAuthTag(),
                 },
             },

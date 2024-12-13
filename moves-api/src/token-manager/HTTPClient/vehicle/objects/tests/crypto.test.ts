@@ -1,4 +1,4 @@
-import { SignatureType, Tag } from '../../../protobuf/outputs/signatures';
+import { SignatureType, Tag } from '../../protobuf/outputs/signatures';
 import Crypto from '../Crypto';
 import Metadata from '../Metadata';
 import PrivateKey from '../PrivateKey';

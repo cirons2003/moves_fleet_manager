@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { authorizeConfig } from './utils/authorizeConfig';
-import { signConfig } from './utils/signConfig';
-import { getVehicleOwnerId } from '../../database/utils/getVehicleOwnerId';
 import { handleTeslaErrors } from './utils/handleTeslaErrors';
+import { vehicleCache } from './vehicle/VehicleCache';
 
 export type RequestConfig = {
     method: 'GET' | 'POST';
@@ -38,23 +37,11 @@ export const HTTPClient = {
                 return handleTeslaErrors(err, userId);
             }
         },
-        vehicleRequest: async <T>(
-            requestUrl: string,
-            config: RequestConfig,
-        ) => {
-            const expandedConfig = expandConfig(config, requestUrl);
-            const userId = 7; //await getVehicleOwnerId(vehicleId);
-            const authorizedConfig = await authorizeConfig(
-                expandedConfig,
-                userId,
-            );
-            const signedConfig = signConfig(authorizedConfig);
-            console.log(signedConfig);
-            try {
-                return await axios.request<T>(signedConfig);
-            } catch (err) {
-                console.error(err); //return handleTeslaErrors(err, userId, 1);
+        useVehicle: (vin: string) => {
+            if (!vehicleCache.containsVehicle(vin)) {
+                vehicleCache.addVehicle(vin);
             }
+            return vehicleCache.getVehicle(vin);
         },
     },
 };

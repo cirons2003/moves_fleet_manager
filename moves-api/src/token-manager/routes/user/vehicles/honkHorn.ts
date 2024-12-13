@@ -10,7 +10,7 @@ import { HTTPClient, RequestConfig } from '../../../HTTPClient/HTTPClient';
 const honkHorn = Router();
 
 honkHorn.get(
-    '/honkHorn/:vehicle_id',
+    '/honkHorn/',
     async (req: Request, res: Response, next: NextFunction) => {
         /*const { vehicle_id } = req.params;
 
@@ -24,21 +24,13 @@ honkHorn.get(
 */
         const vin = '7SAYGDEE1PF800170';
 
-        const config: RequestConfig = {
-            method: 'POST',
-            data: {},
-        };
-
         try {
-            const response = await HTTPClient.tesla.vehicleRequest(
-                `/api/1/vehicles/${vin}/command/honk_horn`,
-                config,
-            );
-            console.log(response);
-            res.status(200).json({
-                data: response?.data,
-                success: true,
-            });
+            const vehicle = HTTPClient.tesla.useVehicle(vin);
+            if (vehicle == undefined) {
+                console.log('Couldnt connect vehicle');
+                return;
+            }
+            console.log(vehicle.honkHorn());
         } catch (err) {
             next(Httpify(err));
         }

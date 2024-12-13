@@ -1,7 +1,4 @@
-import {
-    Domain,
-    RoutableMessage,
-} from '../../protobuf/outputs/universal_message';
+import { Domain, RoutableMessage } from '../protobuf/outputs/universal_message';
 import { randomBytes } from 'crypto';
 import PublicKey from './PublicKey';
 
@@ -36,6 +33,10 @@ class HandshakeRequest {
         const writer = RoutableMessage.encode(routableMessage);
 
         return Buffer.from(writer.finish()).toString('base64');
+    }
+
+    getUUID(): Buffer {
+        return this.uuid;
     }
 }
 
